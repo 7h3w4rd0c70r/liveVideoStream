@@ -232,8 +232,7 @@ function runServer() {
         console.log('\x1b[31m%s\x1b[0m ', '\t' + domainURL);
 
         console.log('\n');
-
-        console.log('Your web-browser (HTML file) MUST set this line:');
+        
         console.log('\x1b[31m%s\x1b[0m ', 'connection.socketURL = "' + domainURL + '";');
 
         if (addr.address != 'localhost' && !isUseHTTPs) {
@@ -242,7 +241,6 @@ function runServer() {
         }
 
         console.log('------------------------------');
-        console.log('Need help? http://bit.ly/2ff7QGk');
     });
 
     require('./Signaling-Server.js')(app, function(socket) {
