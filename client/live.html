@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Test conference</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://rtcmulticonnection.herokuapp.com/dist/RTCMultiConnection.min.js"></script>
+        <script src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js"></script>
+        <style>
+            video {
+                width: 100%;
+                height: 100%;
+                border-radius: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="video" style="width: 640px; height: 480px; display: inline-block;"></div>
+        <div style="border: 2px solid #ddd; width: 300px; height: 480px; display: inline-block;">
+            <div id="chatWindow" style="width: 100%; height: calc(100% - 20px); overflow-y: scroll;"></div>
+            <input type="text" id="message" placeholder="Zpráva" /><button id="send">Odeslat zprávu</button>
+        </div>
+
+        <script>
+            window.getParam = function(n){var r=null,t=[];location.search.substr(1).split("&").forEach(function(i){t=i.split("=");if(t[0]===n)r=decodeURIComponent(t[1]);});return r;}
+            
+            $(document).ready(function () {
+                var connection = new RTCMultiConnection();
+                connection.socketURL = "http://212.111.11.254:9001/";
+                connection.session = {
+                    audio: false,
+                    video: false,
+                    data: true
+                };
+                connection.sdpConstraints.mandatory = {
+                    OfferToReceiveAudio: true,
+                    OfferToReceiveVideo: true
+                };
+                connection.onstream = function(e) {
+                    $('#video').append(e.mediaElement);
+                };
+                connection.onstreamended = function (e) {
+                    $('#video').html('<h1>Živý stream byl ukončen.</h1>');
+                    window.location.href = './index.html';
+                };
+                connection.onmessage = function (e) {
+                    $('#chatWindow').append('<p><b>' + (e.data.nickname == '!!!ADMIN' ? '<span style="color: blue;">Prezentér: </span>' : e.data.nickname + ': ') + '</b><span>' + e.data.message + '</span></p>');
+                    $('#chatWindow').animate({scrollTop: $('#chatWindow').prop('scrollHeight')}, 250);
+                };
+                var room = getParam('host'),
+                    nickname = getParam('nickname');
+                connection.checkPresence(room, function (exists) {
+                    if (exists) {
+                        connection.join(room);
+                        $('#send').prop('disabled', false);
+                    } else {
+                        $('#video').html('<h1>Zadaný stream nebyl nalezen.</h1>');
+                        $('#send').prop('disabled', true);
+                    }
+                });
+                $('#send').click(function () {
+                    var msg = $('#message').val();
+                    $('#message').val('');
+                    connection.send({
+                        nickname: nickname,
+                        message: msg
+                    });
+                    $('#chatWindow').append('<p><b>' + nickname + ': </b><span>' + msg + '</span></p>');
+                    $('#chatWindow').animate({scrollTop: $('#chatWindow').prop('scrollHeight')}, 250);
+                });
+            });
+        </script>
+    </body>
+</html>

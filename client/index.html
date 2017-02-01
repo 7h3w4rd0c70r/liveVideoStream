@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Test conference</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://rtcmulticonnection.herokuapp.com/dist/RTCMultiConnection.min.js"></script>
+        <script src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js"></script>
+    </head>
+    <body>
+        <div id="hosts"></div>
+        Začít streamovat můžete <a href="./stream.html">zde</a>
+        <script>            
+            $(document).ready(function () {
+                var HostsSocket = new io('http://212.111.11.254:9001');
+                HostsSocket.emit('!!!GET_LIST_ALL_HOSTS');
+                HostsSocket.on('!!!LIST_OF_HOSTS', function (data) {
+                    if (data.length == 0) $('#hosts').html('<h2>Není k dispozici žádný stream... </h2>');
+                    else $('#hosts').html('');
+                    var uzivatel = 'Guest' + Math.round(Math.random() * 100);
+                    data.forEach(function (host) {
+                        $('#hosts').append('<a href="./live.html?host=' + String(host).replace(/\s/g, '') + '&nickname=' + uzivatel + '">' + host + '</a><br>');
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>
