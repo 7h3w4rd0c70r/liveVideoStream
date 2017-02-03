@@ -35,8 +35,8 @@ io.on('connection', function (connection) {
         mysql
             .query('INSERT INTO hosts(hostId,userId,streamName,category) VALUES (?,?,?,?)',
                 [ data['hostId'], data['userId'], data['streamName'], data['category'] ])
-            .then(function () { })
-            .catch(function () { });
+            .then(function (result) { console.log(result); })
+            .catch(function (error) { console.log(error); });
     });
 
     connection.on('DISCONNECTED CLIENT', function (data) {
