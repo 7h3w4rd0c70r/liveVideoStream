@@ -2,7 +2,7 @@ var url = require('url');
 var app = require('express')();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
-var mysql = require('mysql-promise');
+var mysql = require('mysql-promise')();
 
 mysql.configure({
     host: 'wm116.wedos.net',
