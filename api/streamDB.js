@@ -6,7 +6,7 @@ var mysql = require('mysql-promise')();
 
 mysql.configure({
     host: 'wm116.wedos.net',
-    database: 'a132229_daxni',
+    database: 'd132229_daxni',
     username: 'a132229_daxni',
     paswword: 'u5Exs7wc'
 });
