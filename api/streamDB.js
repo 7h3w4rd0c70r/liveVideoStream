@@ -12,47 +12,45 @@ mysql.configure({
 });
 
 io.on('connection', function (connection) {
-    var params = url.parse(connection.upgradeReq.url, true)['query'] || { };
-
-    connection.on('LIST HOSTS', function (socket) {
+    connection.on('LIST HOSTS', function (data) {
         setInterval(function () {
             mysql
                 .query('SELECT * FROM hosts')
                 .then(function (hosts) {
-                    socket.emmit('HOSTS', hosts);
+                    connection.emmit('HOSTS', hosts);
                 })
                 .catch(function (error) { });
         }, 150);
     });
 
-    connection.on('CONNECTED CLIENT', function (socket) {
+    connection.on('CONNECTED CLIENT', function (data) {
         mysql
             .query('INSERT INTO clients(clientId,hostId,userId) VALUES (?,?,?)',
-                [ params['clientId'], params['hsotId'], params['userId'] ])
+                [ data['clientId'], data['hsotId'], data['userId'] ])
             .then(function () { })
             .catch(function () { });
     });
 
-    connection.on('CONNECTED HOST', function (socket) {
+    connection.on('CONNECTED HOST', function (data) {
         mysql
             .query('INSERT INTO hosts(hostId,userId,streamName,category) VALUES (?,?,?,?)',
-                [ params['hostId'], params['userId'], params['streamName'], params['category'] ])
+                [ data['hostId'], data['userId'], data['streamName'], data['category'] ])
             .then(function () { })
             .catch(function () { });
     });
 
-    connection.on('DISCONNECTED CLIENT', function (socket) {
+    connection.on('DISCONNECTED CLIENT', function (data) {
         mysql
             .query('UPDATE clients SET status="offline" WHERE clientId=?',
-                [ params['clientId'] ])
+                [ data['clientId'] ])
             .then(function () { })
             .catch(function () { });
     });
 
-    connection.on('DISCONNECTED HOST', function (socket) {
+    connection.on('DISCONNECTED HOST', function (data) {
         mysql
             .query('DELETE FROM hosts WHERE hostId=?',
-                [ params['hostId'] ])
+                [ data['hostId'] ])
             .then(function () { })
             .catch(function () { });
     });
