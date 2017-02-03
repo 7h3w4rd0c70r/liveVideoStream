@@ -20,7 +20,7 @@ io.on('connection', function (connection) {
                     connection.emit('HOSTS', hosts);
                 })
                 .catch(function (error) { });
-        }, 150);
+        }, 400);
     });
 
     connection.on('CONNECTED CLIENT', function (data) {
@@ -32,11 +32,29 @@ io.on('connection', function (connection) {
     });
 
     connection.on('CONNECTED HOST', function (data) {
-        mysql
+        http.request({
+            host: 'daxni.cz',
+            path: '/api/stream.php',
+            method: 'POST'
+        }, function (response) {
+            /*response.on('data', function (res) {
+                
+            });*/
+        })
+            .write(JSON.stringify({
+                event: 'CONNECTED CLIENT',
+                hostId: data['hostId'],
+                userId: data['userId'],
+                streamName: data['streamName'],
+                category: data['category']
+            }))
+            .end();
+        
+        /*mysql
             .query('INSERT INTO hosts(hostId,userId,streamName,category) VALUES (?,?,?,?)',
                 [ data['hostId'], data['userId'], data['streamName'], data['category'] ])
             .then(function (result) { console.log(result); })
-            .catch(function (error) { console.log(error); });
+            .catch(function (error) { console.log(error); });*/
     });
 
     connection.on('DISCONNECTED CLIENT', function (data) {
