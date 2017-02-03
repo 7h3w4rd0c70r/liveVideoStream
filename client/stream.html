@@ -52,7 +52,7 @@
                     data: true
                 };
                 connection.open(room);
-                io.emmit('CONNECTED HOST', {
+                io.emit('CONNECTED HOST', {
                     hostId: room,
                     userId: '4',
                     streamName: 'My new stream',
@@ -64,7 +64,7 @@
                 $('#close').prop('disabled', true);
                 $('#send').prop('disabled', true);
                 connection.close();
-                io.emmit('DICCONNECTED HOST', {
+                io.emit('DICCONNECTED HOST', {
                     hostId: room
                 });
                 window.location.reload();

@@ -17,7 +17,7 @@ io.on('connection', function (connection) {
             mysql
                 .query('SELECT * FROM hosts')
                 .then(function (hosts) {
-                    connection.emmit('HOSTS', hosts);
+                    connection.emit('HOSTS', hosts);
                 })
                 .catch(function (error) { });
         }, 150);
